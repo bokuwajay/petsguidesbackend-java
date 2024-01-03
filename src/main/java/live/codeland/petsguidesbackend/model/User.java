@@ -1,5 +1,7 @@
 package live.codeland.petsguidesbackend.model;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -8,13 +10,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Document(collection = "user")
-public class User {
+public class User implements UserDetails {
+	// fields
 	@Id
 	private String id;
 	private String displayName;
@@ -45,7 +52,9 @@ public class User {
 
 	private Boolean verified = false;
 	private String avatar;
-	private List roles;
+
+	@Enumerated(EnumType.STRING)
+	private Role role;
 	private Boolean active = true;
 
 	@CreatedDate
@@ -56,7 +65,10 @@ public class User {
 	private Boolean deleted = false;
 	private LocalDateTime deletedAt;
 
-	public User(String id, String displayName, String firstName, String lastName, String email, String password, String phone, Boolean verified, String avatar, List roles, Boolean active,LocalDateTime createdAt, LocalDateTime updatedAt, Boolean deleted, LocalDateTime deletedAt) {
+
+
+	// constructor
+	public User(String id, String displayName, String firstName, String lastName, String email, String password, String phone, Boolean verified, String avatar, Boolean active,LocalDateTime createdAt, LocalDateTime updatedAt, Boolean deleted, LocalDateTime deletedAt) {
 		this.id = id;
 		this.displayName = displayName;
 		this.firstName = firstName;
@@ -66,7 +78,6 @@ public class User {
 		this.phone = phone;
 		this.verified = verified;
 		this.avatar = avatar;
-		this.roles = roles;
 		this.active = active;
 		this.createdAt = createdAt;
 		this.updatedAt =updatedAt;
@@ -75,6 +86,8 @@ public class User {
 	}
 
 
+
+	// getter
 	public String getId() {
 		return id;
 	}
@@ -95,6 +108,7 @@ public class User {
 		return email;
 	}
 
+	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -111,8 +125,8 @@ public class User {
 		return avatar;
 	}
 
-	public List getRoles() {
-		return roles;
+	public String getRoles() {
+		return role.name();
 	}
 
 	public Boolean getActive() {
@@ -127,6 +141,10 @@ public class User {
 		return deletedAt;
 	}
 
+
+
+
+	// setter
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -164,9 +182,6 @@ public class User {
 		this.avatar = avatar;
 	}
 
-	public void setRoles(List roles) {
-		this.roles = roles;
-	}
 
 	public void setActive(Boolean active) {
 		this.active = active;
@@ -179,4 +194,39 @@ public class User {
 	public void setDeletedAt(LocalDateTime deletedAt) {
 		this.deletedAt = deletedAt;
 	}
+
+
+
+
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority(role.name()));
+	}
+
+	@Override
+	public String getUsername() {
+		return email;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
 }

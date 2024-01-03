@@ -22,13 +22,13 @@ import java.time.LocalDateTime;
 public class UserController {
     private final UserService userService;
 
-    private final BCryptPasswordEncoder passwordEncoder;
+
 
 
     @Autowired
-    public UserController(UserService userService, BCryptPasswordEncoder passwordEncoder) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
+
     }
 
     @PostMapping("/registration")
@@ -36,9 +36,9 @@ public class UserController {
         try {
             String userPassword = user.getPassword();
             System.out.println("now pass--------" + userPassword);
-            String encodedPassword = passwordEncoder.encode(userPassword);
-            System.out.println("hashed password-------" + encodedPassword);
-            user.setPassword(encodedPassword);
+//            String encodedPassword = passwordEncoder.encode(userPassword);
+//            System.out.println("hashed password-------" + encodedPassword);
+//            user.setPassword(encodedPassword);
             return userService.createUser(user);
         } catch (Exception exception){
             System.out.println("validate-------" + exception);
