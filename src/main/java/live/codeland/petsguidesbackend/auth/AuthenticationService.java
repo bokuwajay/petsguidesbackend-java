@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
-@RequiredArgsConstructor
 public class AuthenticationService {
 
     private final UserRepository userRepository;
@@ -22,29 +21,38 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(User request) {
-
-        passwordEncoder.encode((request.getPassword()));
-        userRepository.save(request);
-        var jwtToken = jwtService.generateToken(request);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+    public AuthenticationService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
     }
 
-    public AuthenticationResponse authenticate(User request) {
+    public AuthenticationResponse register(User user) {
+
+        String encodedPassword = passwordEncoder.encode((user.getPassword()));
+        user.setPassword(encodedPassword);
+       var res = userRepository.save(user);
+        System.out.println("encoded Password------" + user.getPassword());
+        System.out.println("Saved user response---------" + res);
+        var jwtToken = jwtService.generateToken(res);
+        return new AuthenticationResponse(jwtToken);
+    }
+
+    public AuthenticationResponse authenticate(User user) {
+        System.out.println("authenticate email-----" + user.getEmail());
+        System.out.println("authenticate password-----" + user.getPassword());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
+                        user.getEmail(),
+                        user.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(request.getEmail())
+        var foundUser = userRepository.findByEmail(user.getEmail())
                 .orElseThrow();
 
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+        System.out.println("authenticate Service-----" + foundUser);
+        var jwtToken = jwtService.generateToken(foundUser);
+        return new AuthenticationResponse(jwtToken);
     }
 }

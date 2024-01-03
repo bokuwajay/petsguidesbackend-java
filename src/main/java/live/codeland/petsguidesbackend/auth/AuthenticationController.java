@@ -25,19 +25,12 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(@RequestBody User user){
         return ResponseEntity.ok(service.register(user));
     }
-//    public ResponseEntity<AuthenticationResponse> register(
-//            @RequestBody RegisterRequest request
-//    ){
-//       return ResponseEntity.ok(service.register(request));
-//    }
+
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody User user){
+        System.out.println("authen ---------->" + user.getEmail());
         return ResponseEntity.ok(service.authenticate(user));
     }
-//    public ResponseEntity<AuthenticationResponse> authenticate(
-//            @RequestBody AuthenticationRequest request
-//    ){
-//        return ResponseEntity.ok(service.authenticate(request));
-//    }
+
 }
