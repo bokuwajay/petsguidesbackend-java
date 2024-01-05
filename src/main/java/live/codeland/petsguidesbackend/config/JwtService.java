@@ -69,6 +69,7 @@ public class JwtService {
 
 
     // extracting all claims (payload data) from JWT
+    // this is also a process of verifying the token
     private Claims extractAllClaims(String token){
 //        try{
 //            return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
@@ -81,16 +82,10 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
-//        try{
-//            Path publicKeyPath = Paths.get(PRIVATE_KEY_FILE);
-//            privateKey = new String(Files.readAllBytes(publicKeyPath));
-//            byte[] keyBytes = Decoders.BASE64.decode(privateKey);
-//            return Keys.hmacShaKeyFor(keyBytes);
-//        }catch (IOException e){
-//            e.printStackTrace();
-//        }
-//        return null;
+
+        // the SECRET_KEY is base64 format, this is to convert it to raw bytes form (which is binary data of SECRET_KEY)
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        // use the keyBytes with HMAC algorithm to create a digital signature
         return Keys.hmacShaKeyFor(keyBytes);
 
     }

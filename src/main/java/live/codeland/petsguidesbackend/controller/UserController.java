@@ -36,15 +36,16 @@ public class UserController {
         try {
             String userPassword = user.getPassword();
             System.out.println("now pass--------" + userPassword);
-//            String encodedPassword = passwordEncoder.encode(userPassword);
-//            System.out.println("hashed password-------" + encodedPassword);
-//            user.setPassword(encodedPassword);
+
             return userService.createUser(user);
         } catch (Exception exception){
-            System.out.println("validate-------" + exception);
+            String message = "Catch in controller createUser: " + exception.getMessage();
+            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+            ApiResponse response = new ApiResponse(status, 500, null, message, LocalDateTime.now());
+            return null;
+//            return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         }
 
-        return userService.createUser(user);
     }
 
 
@@ -56,6 +57,7 @@ public class UserController {
             @RequestParam(defaultValue = "asc") String orderBy
     ) {
     try {
+        System.out.println("get all----");
         UserListDto userResponse = userService.getAllUser(page, limit, sortBy, orderBy);
         if(!userResponse.getUserList().isEmpty()){
             String message = "Successfully get all users";

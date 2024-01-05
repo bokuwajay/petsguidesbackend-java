@@ -2,7 +2,6 @@ package live.codeland.petsguidesbackend.auth;
 
 import live.codeland.petsguidesbackend.model.User;
 import live.codeland.petsguidesbackend.service.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

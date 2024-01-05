@@ -3,12 +3,10 @@ package live.codeland.petsguidesbackend.auth;
 import live.codeland.petsguidesbackend.config.JwtService;
 import live.codeland.petsguidesbackend.model.User;
 import live.codeland.petsguidesbackend.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class AuthenticationService {

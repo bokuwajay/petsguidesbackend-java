@@ -78,6 +78,7 @@ public class User implements UserDetails {
 		this.phone = phone;
 		this.verified = verified;
 		this.avatar = avatar;
+		this.role = Role.USER;
 		this.active = active;
 		this.createdAt = createdAt;
 		this.updatedAt =updatedAt;
