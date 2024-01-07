@@ -9,16 +9,21 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.KeyFactory;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
@@ -26,9 +31,11 @@ public class JwtService {
     private static final PrivateKey privateKey = loadPrivateKey("src/main/resources/private_key.der");
     private static final PublicKey publicKey = loadPublicKey("src/main/resources/public_key.der");
 
+//    private static final String SECRET_KEY = "1db849ae1d1ebcb897fc7b6a7afcc50f1e3aa42471ca7741eace0c4ae0b93621";
 
     private static PrivateKey loadPrivateKey(String filePath) {
         try {
+
             byte[] keyBytes = Files.readAllBytes(Paths.get(filePath));
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -72,7 +79,7 @@ public class JwtService {
         return Jwts.builder().setClaims(extractClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24 ))
                 .signWith(privateKey)
                 .compact();
     }
@@ -104,5 +111,13 @@ public class JwtService {
         return Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(token).getBody();
     }
 
+//    private Key getSignInKey() {
+//
+//        // the SECRET_KEY is base64 format, this is to convert it to raw bytes form (which is binary data of SECRET_KEY)
+//        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+//        // use the keyBytes with HMAC algorithm to create a digital signature
+//        return Keys.hmacShaKeyFor(keyBytes);
+//
+//    }
 
 }

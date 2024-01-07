@@ -27,30 +27,24 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse register(User user) {
-
         String encodedPassword = passwordEncoder.encode((user.getPassword()));
         user.setPassword(encodedPassword);
-       var res = userRepository.save(user);
-        System.out.println("encoded Password------" + user.getPassword());
-        System.out.println("Saved user response---------" + res);
-        var jwtToken = jwtService.generateToken(res);
+       User savedUser = userRepository.save(user);
+        String jwtToken = jwtService.generateToken(savedUser);
         return new AuthenticationResponse(jwtToken);
     }
 
     public AuthenticationResponse authenticate(User user) {
-        System.out.println("authenticate email-----" + user.getEmail());
-        System.out.println("authenticate password-----" + user.getPassword());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         user.getEmail(),
                         user.getPassword()
                 )
         );
-        var foundUser = userRepository.findByEmail(user.getEmail())
+        User foundUser = userRepository.findByEmail(user.getEmail())
                 .orElseThrow();
 
-        System.out.println("authenticate Service-----" + foundUser);
-        var jwtToken = jwtService.generateToken(foundUser);
+        String jwtToken = jwtService.generateToken(foundUser);
         return new AuthenticationResponse(jwtToken);
     }
 }

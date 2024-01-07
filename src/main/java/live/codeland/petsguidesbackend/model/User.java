@@ -2,10 +2,15 @@ package live.codeland.petsguidesbackend.model;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import jakarta.validation.constraints.Pattern;
@@ -18,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+
 
 @Document(collection = "user")
 public class User implements UserDetails {
@@ -36,6 +42,7 @@ public class User implements UserDetails {
 
 	@Field
 	@NotNull
+	@Indexed(unique = true)
 	@Pattern(regexp = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$", message = "Invalid e-mail address")
 	private String email;
 
@@ -45,45 +52,54 @@ public class User implements UserDetails {
 	@Size(min = 12, message = "Password must be at least 12 characters long.")
 	private String password;
 
+	@Field
 	@NotNull
+	@Indexed(unique = true)
 	@Pattern(regexp = "^(?:\\+852-?)?[456789]\\d{3}-?\\d{4}$", message = "Invalid phone number")
 	private String phone;
 
 
-	private Boolean verified = false;
+	@Field
+	private Boolean verified;
+
+	@Field
 	private String avatar;
 
+	@Field
 	@Enumerated(EnumType.STRING)
 	private Role role;
-	private Boolean active = true;
 
-	@CreatedDate
+
+	@Field
 	private LocalDateTime createdAt;
 
-	@LastModifiedDate
+	@Field
 	private LocalDateTime updatedAt;
+
+	@Field
 	private Boolean deleted = false;
+
+	@Field
 	private LocalDateTime deletedAt;
 
 
 
 	// constructor
-	public User(String id, String displayName, String firstName, String lastName, String email, String password, String phone, Boolean verified, String avatar, Boolean active,LocalDateTime createdAt, LocalDateTime updatedAt, Boolean deleted, LocalDateTime deletedAt) {
+	public User(String id, String firstName, String lastName, String email, String password, String phone, String avatar) {
 		this.id = id;
-		this.displayName = displayName;
+		this.displayName = firstName + " " + lastName;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
 		this.phone = phone;
-		this.verified = verified;
+		this.verified = false;
 		this.avatar = avatar;
 		this.role = Role.USER;
-		this.active = active;
-		this.createdAt = createdAt;
-		this.updatedAt =updatedAt;
-		this.deleted = deleted;
-		this.deletedAt = deletedAt;
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
+		this.deleted = false;
+		this.deletedAt = null;
 	}
 
 
@@ -126,13 +142,11 @@ public class User implements UserDetails {
 		return avatar;
 	}
 
-	public String getRoles() {
-		return role.name();
-	}
+	public String getRoles() { return role.name(); }
 
-	public Boolean getActive() {
-		return active;
-	}
+	public LocalDateTime getCreatedAt() { return createdAt; }
+
+	public LocalDateTime getUpdatedAt() { return updatedAt; }
 
 	public Boolean getDeleted() {
 		return deleted;
@@ -141,6 +155,8 @@ public class User implements UserDetails {
 	public LocalDateTime getDeletedAt() {
 		return deletedAt;
 	}
+
+
 
 
 
@@ -183,10 +199,9 @@ public class User implements UserDetails {
 		this.avatar = avatar;
 	}
 
+	public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
+	public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
@@ -198,8 +213,10 @@ public class User implements UserDetails {
 
 
 
-
-
+	// below is UserDetails-related information
+	// These fields are part of the UserDetails contract, and Spring Security manages them internally.
+	// When Spring Security loads a user from the database, it uses the information stored in the User entity
+	// and combines it with below UserDetails-related information. (we cannot see them in MongoCompass, but can see it when call get user API)
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(role.name()));

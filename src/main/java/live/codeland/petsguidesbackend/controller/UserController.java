@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,57 +22,38 @@ public class UserController {
     private final UserService userService;
 
 
-
-
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
 
     }
 
-    @PostMapping("/registration")
-    public User createUser(@Valid @RequestBody User user) {
-        try {
-            String userPassword = user.getPassword();
-            System.out.println("now pass--------" + userPassword);
-
-            return userService.createUser(user);
-        } catch (Exception exception){
-            String message = "Catch in controller createUser: " + exception.getMessage();
-            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            ApiResponse response = new ApiResponse(status, 500, null, message, LocalDateTime.now());
-            return null;
-//            return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
-        }
-
-    }
 
 
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse> getAllUser(
+    public ResponseEntity<ApiResponse<UserListDto>> getAllUser(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "asc") String orderBy
     ) {
     try {
-        System.out.println("get all----");
         UserListDto userResponse = userService.getAllUser(page, limit, sortBy, orderBy);
         if(!userResponse.getUserList().isEmpty()){
             String message = "Successfully get all users";
             HttpStatus status = HttpStatus.OK;
-            ApiResponse response = new ApiResponse(status, 200, userResponse, message, LocalDateTime.now());
+            ApiResponse<UserListDto> response = new ApiResponse<>(status, 200, userResponse, message, LocalDateTime.now());
             return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         } else {
             String message = "No user found";
             HttpStatus status = HttpStatus.NOT_FOUND;
-            ApiResponse response = new ApiResponse(status, 404, null, message, LocalDateTime.now());
+            ApiResponse<UserListDto> response = new ApiResponse<>(status, 404, null, message, LocalDateTime.now());
             return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         }
     } catch (Exception exception){
         String message = "Catch in controller getAllUser: " + exception.getMessage();
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        ApiResponse response = new ApiResponse(status, 500, null, message, LocalDateTime.now());
+        ApiResponse<UserListDto> response = new ApiResponse<>(status, 500, null, message, LocalDateTime.now());
         return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
     }
     }
@@ -92,24 +72,24 @@ public class UserController {
     }
 
     @DeleteMapping("/profile/{id}")
-    public ResponseEntity<ApiResponse> softDeleteUser(@PathVariable String id) {
+    public ResponseEntity<ApiResponse<User>> softDeleteUser(@PathVariable String id) {
         try {
             User deletedUser = userService.softDeleteUser(id);
             if (deletedUser != null) {
                 String message = "Successfully deleted";
                 HttpStatus status = HttpStatus.OK;
-                ApiResponse response = new ApiResponse(status, 200, deletedUser, message, LocalDateTime.now());
+                ApiResponse<User> response = new ApiResponse<>(status, 200, deletedUser, message, LocalDateTime.now());
                 return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
             } else {
                 String message = "Cannot found the user by id";
                 HttpStatus status = HttpStatus.NOT_FOUND;
-                ApiResponse response = new ApiResponse(status, 404, null, message, LocalDateTime.now());
+                ApiResponse<User> response = new ApiResponse<>(status, 404, null, message, LocalDateTime.now());
                 return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
             }
         } catch (Exception exception) {
             String message = "Catch in controller softDeleteUser: " + exception.getMessage();
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            ApiResponse response = new ApiResponse(status, 500, null, message, LocalDateTime.now());
+            ApiResponse<User> response = new ApiResponse<>(status, 500, null, message, LocalDateTime.now());
             return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         }
     }

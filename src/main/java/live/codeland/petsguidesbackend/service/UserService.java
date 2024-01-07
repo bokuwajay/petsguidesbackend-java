@@ -48,9 +48,6 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public User createUser(User user) {
-        return userRepository.save(user);
-    }
 
     public User updateUser(String id, User user) {
         if (userRepository.existsById(id)) {
@@ -63,7 +60,6 @@ public class UserService {
         try {
             User existingUser = userRepository.findById(id).orElse(null);
             if (existingUser != null) {
-                existingUser.setActive(false);
                 existingUser.setDeleted(true);
                 existingUser.setDeletedAt(LocalDateTime.now());
                 return userRepository.save(existingUser);
