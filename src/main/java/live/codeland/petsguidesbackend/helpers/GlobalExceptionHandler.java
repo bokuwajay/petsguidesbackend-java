@@ -33,25 +33,22 @@ public class GlobalExceptionHandler {
 
         String errorMessage = String.join(", ", errorMessages);
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        ApiResponse errorResponse = new ApiResponse(status, status.value(), null, errorMessage, LocalDateTime.now());
+        ApiResponse<Object> errorResponse = new ApiResponse<>(status, status.value(), null, errorMessage, LocalDateTime.now());
         return new ResponseEntity<>(errorResponse, new HttpHeaders(), errorResponse.getStatus());
     }
 
-    // 401 Unauthorized (invalid token/ missing token / expired token / anything related to authentication)
-    @ExceptionHandler(CustomJwtException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<ApiResponse<Object>> handleJwtException(CustomJwtException customJwtException){
-        String errorMessage = customJwtException.getMessage();
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
-        if(customJwtException.isExpired()){
-            errorMessage = "JWT token is expired";
-            status = HttpStatus.UNAUTHORIZED;
-        }
 
-        ApiResponse<Object> customError = new ApiResponse(status, status.value(), null,errorMessage, LocalDateTime.now());
+    // 405 wrong http request method (GET/PATCH/POST/DELETE)
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<Object> handleHttpException(HttpRequestMethodNotSupportedException exception){
+        String message = exception.getBody().getDetail();
+        HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;
+        ApiResponse<Object> customError = new ApiResponse<>(status, status.value(), null,message, LocalDateTime.now());
         return new ResponseEntity<>(customError, new HttpHeaders(), customError.getStatus());
     }
 
+
+    // 409 data duplicated in DB
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<Object> handleDuplicateKeyException(DuplicateKeyException duplicateKeyException){
         final String message;
@@ -63,16 +60,9 @@ public class GlobalExceptionHandler {
             message = "Duplicate Exception: " + duplicateKeyException.getMessage();
         }
         HttpStatus status = HttpStatus.CONFLICT;
-        ApiResponse<AuthenticationResponse> response = new ApiResponse<>(status, status.value(), null, message, LocalDateTime.now());
+        ApiResponse<Object> response = new ApiResponse<>(status, status.value(), null, message, LocalDateTime.now());
         return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
     }
 
 
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<Object> handleHttpException(HttpRequestMethodNotSupportedException exception){
-        String errorMessage = exception.getBody().getDetail();
-        HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;
-        ApiResponse customError = new ApiResponse(status, status.value(), null,errorMessage, LocalDateTime.now());
-        return new ResponseEntity<>(customError, new HttpHeaders(), customError.getStatus());
-    }
 }
