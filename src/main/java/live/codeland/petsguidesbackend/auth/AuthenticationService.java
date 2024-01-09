@@ -34,14 +34,14 @@ public class AuthenticationService {
         return new AuthenticationResponse(jwtToken);
     }
 
-    public AuthenticationResponse authenticate(User user) {
+    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        user.getEmail(),
-                        user.getPassword()
+                        authenticationRequest.getEmail(),
+                        authenticationRequest.getPassword()
                 )
         );
-        User foundUser = userRepository.findByEmail(user.getEmail())
+        User foundUser = userRepository.findByEmail(authenticationRequest.getEmail())
                 .orElseThrow();
 
         String jwtToken = jwtService.generateToken(foundUser);

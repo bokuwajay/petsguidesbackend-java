@@ -41,19 +41,19 @@ public class UserController {
         if(!userResponse.getList().isEmpty()){
             String message = "Successfully get all users";
             HttpStatus status = HttpStatus.OK;
-            ApiResponse<PaginationDto> response = new ApiResponse<>(status, 200, userResponse, message, LocalDateTime.now());
+            ApiResponse<PaginationDto> response = new ApiResponse<>(status, status.value(), userResponse, message, LocalDateTime.now());
             return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         } else {
             String message = "No user found";
             HttpStatus status = HttpStatus.NOT_FOUND;
-            ApiResponse<PaginationDto> response = new ApiResponse<>(status, 404, null, message, LocalDateTime.now());
+            ApiResponse<PaginationDto> response = new ApiResponse<>(status, status.value(), null, message, LocalDateTime.now());
             return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         }
     } catch (Exception exception){
-        String message = "Catch in controller getAllUser: " + exception.getMessage();
+        String exceptionMessage = "Catch in controller getAllUser: " + exception.getMessage();
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        ApiResponse<PaginationDto> response = new ApiResponse<>(status, 500, null, message, LocalDateTime.now());
-        return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
+        ApiResponse<PaginationDto> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
     }
     }
 
@@ -77,19 +77,19 @@ public class UserController {
             if (deletedUser != null) {
                 String message = "Successfully deleted";
                 HttpStatus status = HttpStatus.OK;
-                ApiResponse<User> response = new ApiResponse<>(status, 200, deletedUser, message, LocalDateTime.now());
+                ApiResponse<User> response = new ApiResponse<>(status, status.value(), deletedUser, message, LocalDateTime.now());
                 return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
             } else {
                 String message = "Cannot found the user by id";
                 HttpStatus status = HttpStatus.NOT_FOUND;
-                ApiResponse<User> response = new ApiResponse<>(status, 404, null, message, LocalDateTime.now());
+                ApiResponse<User> response = new ApiResponse<>(status, status.value(), null, message, LocalDateTime.now());
                 return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
             }
         } catch (Exception exception) {
-            String message = "Catch in controller softDeleteUser: " + exception.getMessage();
+            String exceptionMessage = "Catch in controller softDeleteUser: " + exception.getMessage();
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            ApiResponse<User> response = new ApiResponse<>(status, 500, null, message, LocalDateTime.now());
-            return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
+            ApiResponse<User> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
+            return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
         }
     }
 }
