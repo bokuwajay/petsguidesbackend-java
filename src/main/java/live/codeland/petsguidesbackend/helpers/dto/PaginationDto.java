@@ -4,12 +4,12 @@ import java.util.List;
 
 public class PaginationDto<T> {
 
-    private List<T> list;
-    private long total;
-    private int totalPages;
-    private int currentPage;
-    private Integer nextPage;
-    private Integer prevPage;
+    private final List<T> list;
+    private final long total;
+    private final int totalPages;
+    private final int currentPage;
+    private final Integer nextPage;
+    private final Integer prevPage;
 
     public PaginationDto(List<T> list, long total, int totalPages, int currentPage, Integer nextPage, Integer prevPage) {
         this.list = list;
