@@ -4,12 +4,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import live.codeland.petsguidesbackend.auth.AuthenticationResponse;
-import live.codeland.petsguidesbackend.helpers.CustomJwtException;
-import live.codeland.petsguidesbackend.model.ApiResponse;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +18,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.ExpiredJwtException;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 
 @Component
@@ -49,8 +42,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final String userEmail;
 
             if(authHeader == null || !authHeader.startsWith("Bearer ")){
-//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                response.getWriter().write("Catch in JwtAuthFilter: empty token");
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -79,15 +70,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // after above , always need to pass to next filter
             filterChain.doFilter(request, response);
 
-        } catch (MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            throw new CustomJwtException("JWT Exception: " + e.getMessage());
-        } catch (UsernameNotFoundException e) {
+        } catch (MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException exception) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("JWT token exception: " + exception.getMessage());
+        } catch (UsernameNotFoundException exception) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized: User not found");
-        } catch (Exception ex) {
+        } catch (Exception exception) {
             // Handle other unexpected exceptions
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("Internal Server Error" + ex.getMessage());
+            response.getWriter().write("Internal Server Error: " + exception.getMessage());
         }
     }
 }
