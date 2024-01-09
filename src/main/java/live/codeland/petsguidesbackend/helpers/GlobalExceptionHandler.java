@@ -6,6 +6,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -23,45 +24,45 @@ public class GlobalExceptionHandler {
 
     // 400 Bad request (missing payload / data type incorrect)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException validationException) {
-        List<String> errorMessages = validationException.getBindingResult().getFieldErrors().stream()
+    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException exception) {
+        List<String> exceptionMessages = exception.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> String.format("%s: %s (Rejected value: %s)",
                         fieldError.getField(),
                         fieldError.getDefaultMessage(),
                         fieldError.getRejectedValue()))
                 .collect(Collectors.toList());
 
-        String errorMessage = String.join(", ", errorMessages);
+        String exceptionMessage = String.join(", ", exceptionMessages);
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        ApiResponse<Object> errorResponse = new ApiResponse<>(status, status.value(), null, errorMessage, LocalDateTime.now());
-        return new ResponseEntity<>(errorResponse, new HttpHeaders(), errorResponse.getStatus());
+        ApiResponse<Object> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
     }
-
-
+    
     // 405 wrong http request method (GET/PATCH/POST/DELETE)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<Object> handleHttpException(HttpRequestMethodNotSupportedException exception){
-        String message = exception.getBody().getDetail();
+        String exceptionMessage = exception.getBody().getDetail();
         HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;
-        ApiResponse<Object> customError = new ApiResponse<>(status, status.value(), null,message, LocalDateTime.now());
-        return new ResponseEntity<>(customError, new HttpHeaders(), customError.getStatus());
+        ApiResponse<Object> exceptionResponse = new ApiResponse<>(status, status.value(), null,exceptionMessage, LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
     }
 
 
     // 409 data duplicated in DB
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<Object> handleDuplicateKeyException(DuplicateKeyException duplicateKeyException){
-        final String message;
+    public ResponseEntity<Object> handleDuplicateKeyException(DuplicateKeyException exception){
+        final String exceptionMessage;
         Pattern pattern = Pattern.compile("dup key: \\{([^}]*)\\}");
-        Matcher matcher = pattern.matcher(duplicateKeyException.getMessage());
+        Matcher matcher = pattern.matcher(exception.getMessage());
         if(matcher.find()){
-            message = "Duplicate data {" + matcher.group(1) + "}";
+            String matchedString = "Duplicate data {" + matcher.group(1) + "}";
+            exceptionMessage = matchedString.replace("\"", "");
         } else {
-            message = "Duplicate Exception: " + duplicateKeyException.getMessage();
+            exceptionMessage = "Duplicate Exception: " + exception.getMessage();
         }
         HttpStatus status = HttpStatus.CONFLICT;
-        ApiResponse<Object> response = new ApiResponse<>(status, status.value(), null, message, LocalDateTime.now());
-        return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
+        ApiResponse<Object> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
     }
 
 

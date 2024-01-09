@@ -1,6 +1,6 @@
 package live.codeland.petsguidesbackend.service;
 
-import live.codeland.petsguidesbackend.helpers.dto.UserListDto;
+import live.codeland.petsguidesbackend.helpers.dto.PaginationDto;
 import live.codeland.petsguidesbackend.model.User;
 import live.codeland.petsguidesbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserListDto getAllUser(int page, int limit, String sortBy, String orderBy) {
+    public PaginationDto<User> getAllUser(int page, int limit, String sortBy, String orderBy) {
        try {
 
            PageRequest pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(orderBy))));
@@ -35,7 +35,7 @@ public class UserService {
            int currentPage = userList.isEmpty()? 1: getAllUser.getNumber() + 1;
            Integer nextPage = getAllUser.hasNext() ? getAllUser.getNumber() + 2 : null;
            Integer prevPage = getAllUser.hasPrevious() && !userList.isEmpty() ? getAllUser.getNumber() : null;
-            return new UserListDto(userList, total, totalPages, currentPage, nextPage, prevPage);
+            return new PaginationDto<>(userList, total, totalPages, currentPage, nextPage, prevPage);
 
        } catch (Exception exception){
            String message = "Catch in service getAllUser:  " + exception.getMessage();

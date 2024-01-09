@@ -1,7 +1,6 @@
 package live.codeland.petsguidesbackend.controller;
 
-import jakarta.validation.Valid;
-import live.codeland.petsguidesbackend.helpers.dto.UserListDto;
+import live.codeland.petsguidesbackend.helpers.dto.PaginationDto;
 import live.codeland.petsguidesbackend.model.ApiResponse;
 import live.codeland.petsguidesbackend.model.User;
 import live.codeland.petsguidesbackend.service.UserService;
@@ -31,29 +30,29 @@ public class UserController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse<UserListDto>> getAllUser(
+    public ResponseEntity<ApiResponse<PaginationDto>> getAllUser(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "asc") String orderBy
     ) {
     try {
-        UserListDto userResponse = userService.getAllUser(page, limit, sortBy, orderBy);
-        if(!userResponse.getUserList().isEmpty()){
+        PaginationDto<User> userResponse = userService.getAllUser(page, limit, sortBy, orderBy);
+        if(!userResponse.getList().isEmpty()){
             String message = "Successfully get all users";
             HttpStatus status = HttpStatus.OK;
-            ApiResponse<UserListDto> response = new ApiResponse<>(status, 200, userResponse, message, LocalDateTime.now());
+            ApiResponse<PaginationDto> response = new ApiResponse<>(status, 200, userResponse, message, LocalDateTime.now());
             return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         } else {
             String message = "No user found";
             HttpStatus status = HttpStatus.NOT_FOUND;
-            ApiResponse<UserListDto> response = new ApiResponse<>(status, 404, null, message, LocalDateTime.now());
+            ApiResponse<PaginationDto> response = new ApiResponse<>(status, 404, null, message, LocalDateTime.now());
             return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         }
     } catch (Exception exception){
         String message = "Catch in controller getAllUser: " + exception.getMessage();
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        ApiResponse<UserListDto> response = new ApiResponse<>(status, 500, null, message, LocalDateTime.now());
+        ApiResponse<PaginationDto> response = new ApiResponse<>(status, 500, null, message, LocalDateTime.now());
         return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
     }
     }

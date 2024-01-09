@@ -1,20 +1,18 @@
 package live.codeland.petsguidesbackend.helpers.dto;
 
-import live.codeland.petsguidesbackend.model.User;
-
 import java.util.List;
 
-public class UserListDto {
+public class PaginationDto<T> {
 
-    private List<User> userList;
+    private List<T> list;
     private long total;
     private int totalPages;
     private int currentPage;
     private Integer nextPage;
     private Integer prevPage;
 
-    public UserListDto(List<User> userList, long total, int totalPages, int currentPage, Integer nextPage, Integer prevPage) {
-        this.userList = userList;
+    public PaginationDto(List<T> list, long total, int totalPages, int currentPage, Integer nextPage, Integer prevPage) {
+        this.list = list;
         this.total = total;
         this.totalPages = totalPages;
         this.currentPage = currentPage;
@@ -22,8 +20,8 @@ public class UserListDto {
         this.prevPage = prevPage;
     }
 
-    public List<User> getUserList() {
-        return userList;
+    public List<T> getList() {
+        return list;
     }
 
     public long getTotal() {
