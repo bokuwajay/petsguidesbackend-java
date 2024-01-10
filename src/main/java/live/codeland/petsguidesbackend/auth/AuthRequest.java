@@ -2,7 +2,7 @@ package live.codeland.petsguidesbackend.auth;
 
 import jakarta.validation.constraints.NotNull;
 
-public class AuthenticationRequest {
+public class AuthRequest {
 
     @NotNull
     private String email;

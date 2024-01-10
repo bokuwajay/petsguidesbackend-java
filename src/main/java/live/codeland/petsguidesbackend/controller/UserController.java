@@ -30,7 +30,7 @@ public class UserController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse<PaginationDto>> getAllUser(
+    public ResponseEntity<ApiResponse<PaginationDto<User>>> getAllUser(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -41,18 +41,18 @@ public class UserController {
         if(!userResponse.getList().isEmpty()){
             String message = "Successfully get all users";
             HttpStatus status = HttpStatus.OK;
-            ApiResponse<PaginationDto> response = new ApiResponse<>(status, status.value(), userResponse, message, LocalDateTime.now());
+            ApiResponse<PaginationDto<User>> response = new ApiResponse<>(status, status.value(), userResponse, message, LocalDateTime.now());
             return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         } else {
             String message = "No user found";
             HttpStatus status = HttpStatus.NOT_FOUND;
-            ApiResponse<PaginationDto> response = new ApiResponse<>(status, status.value(), null, message, LocalDateTime.now());
+            ApiResponse<PaginationDto<User>> response = new ApiResponse<>(status, status.value(), null, message, LocalDateTime.now());
             return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         }
     } catch (Exception exception){
         String exceptionMessage = "Catch in controller getAllUser: " + exception.getMessage();
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        ApiResponse<PaginationDto> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
+        ApiResponse<PaginationDto<User>> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
         return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
     }
     }
