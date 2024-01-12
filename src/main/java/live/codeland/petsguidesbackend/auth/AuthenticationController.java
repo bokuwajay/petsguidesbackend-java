@@ -1,7 +1,7 @@
 package live.codeland.petsguidesbackend.auth;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import live.codeland.petsguidesbackend.helpers.dto.PaginationDto;
 import live.codeland.petsguidesbackend.model.ApiResponse;
 import live.codeland.petsguidesbackend.model.User;
 import live.codeland.petsguidesbackend.service.UserService;
@@ -24,6 +24,7 @@ public class AuthenticationController {
     private final AuthenticationService authService;
     private final UserService userService;
 
+
     public AuthenticationController(AuthenticationService authService, UserService userService) {
         this.authService = authService;
         this.userService = userService;
@@ -40,18 +41,20 @@ public class AuthenticationController {
 
 
     @PostMapping("/authentication")
-    public ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@Valid @RequestBody AuthRequest authRequest){
+    public void authenticate(@Valid @RequestBody AuthRequest authRequest ,HttpServletResponse response){
         try {
             AuthenticationResponse authResponse = authService.authenticate(authRequest);
-            String message = "Successfully Authenticated!";
-            HttpStatus status = HttpStatus.OK;
-            ApiResponse<AuthenticationResponse> response = new ApiResponse<>(status, status.value(), authResponse, message, LocalDateTime.now());
-            return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
+            String fullDeepLinkUrl = "petsguides://codeland.live/login";
+            response.sendRedirect(fullDeepLinkUrl);
+//            String message = "Successfully Authenticated!";
+//            HttpStatus status = HttpStatus.OK;
+//            ApiResponse<AuthenticationResponse> response = new ApiResponse<>(status, status.value(), authResponse, message, LocalDateTime.now());
+//            return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
         } catch (Exception exception){
             String exceptionMessage = "Catch in controller getAllUser: " + exception.getMessage();
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
             ApiResponse<AuthenticationResponse> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
-            return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
+//            return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
         }
     }
 
