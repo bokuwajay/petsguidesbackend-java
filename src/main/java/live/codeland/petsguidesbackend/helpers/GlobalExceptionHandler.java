@@ -6,7 +6,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -34,6 +34,15 @@ public class GlobalExceptionHandler {
 
         String exceptionMessage = String.join(", ", exceptionMessages);
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        ApiResponse<Object> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
+        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
+    }
+
+    // The auth pass the filter, but the password / email is wrong
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Object> handleAuthenticationException(AuthenticationException exception){
+        String exceptionMessage = exception.getMessage();
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
         ApiResponse<Object> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
         return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
     }

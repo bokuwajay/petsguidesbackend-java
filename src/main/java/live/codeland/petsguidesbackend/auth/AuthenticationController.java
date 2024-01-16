@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDateTime;
 
@@ -41,21 +42,19 @@ public class AuthenticationController {
 
 
     @PostMapping("/authentication")
-    public void authenticate(@Valid @RequestBody AuthRequest authRequest ,HttpServletResponse response){
-        try {
+    public ResponseEntity authenticate(@Valid @RequestBody AuthRequest authRequest ){
+
             AuthenticationResponse authResponse = authService.authenticate(authRequest);
-            String fullDeepLinkUrl = "petsguides://codeland.live/login";
-            response.sendRedirect(fullDeepLinkUrl);
-//            String message = "Successfully Authenticated!";
-//            HttpStatus status = HttpStatus.OK;
-//            ApiResponse<AuthenticationResponse> response = new ApiResponse<>(status, status.value(), authResponse, message, LocalDateTime.now());
-//            return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
-        } catch (Exception exception){
-            String exceptionMessage = "Catch in controller getAllUser: " + exception.getMessage();
-            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            ApiResponse<AuthenticationResponse> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
-//            return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
-        }
+//            String fullDeepLinkUrl = "petsguides://codeland.live/goMap";
+//            response.sendRedirect(fullDeepLinkUrl);
+//            RedirectView redirectView = new RedirectView();
+//            redirectView.setUrl(fullDeepLinkUrl);
+//            return redirectView;
+            String message = "Successfully Authenticated!";
+            HttpStatus status = HttpStatus.OK;
+            ApiResponse<AuthenticationResponse> response = new ApiResponse<>(status, status.value(), authResponse, message, LocalDateTime.now());
+            return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
+
     }
 
 }

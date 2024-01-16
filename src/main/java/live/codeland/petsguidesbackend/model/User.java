@@ -2,14 +2,9 @@ package live.codeland.petsguidesbackend.model;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.hibernate.validator.constraints.UniqueElements;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -33,27 +28,32 @@ public class User implements UserDetails {
 	private String displayName;
 	@Field
 	@NotNull
+	@NotBlank
 	@Pattern(regexp = "^(?![0-9]+$)(?!(false|true)$)[a-zA-Z]+$", message = "Invalid first name format")
 	private String firstName;
 	@Field
 	@NotNull
+	@NotBlank
 	@Pattern(regexp = "^(?![0-9]+$)(?!(false|true)$)[a-zA-Z]+$", message = "Invalid last name format")
 	private String lastName;
 
 	@Field
 	@NotNull
+	@NotBlank
 	@Indexed(unique = true)
 	@Pattern(regexp = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$", message = "Invalid e-mail address")
 	private String email;
 
 	@Field
 	@NotNull
+	@NotBlank
 	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+", message = "Please include at least 1 uppercase, 1 lowercase and 1 digit.")
 	@Size(min = 12, message = "Password must be at least 12 characters long.")
 	private String password;
 
 	@Field
 	@NotNull
+	@NotBlank
 	@Indexed(unique = true)
 	@Pattern(regexp = "^(?:\\+852-?)?[456789]\\d{3}-?\\d{4}$", message = "Invalid phone number")
 	private String phone;
