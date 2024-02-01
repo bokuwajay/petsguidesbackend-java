@@ -1,4 +1,4 @@
-package live.codeland.petsguidesbackend.config;
+package live.codeland.petsguidesbackend.config.jwt;
 
 
 import io.jsonwebtoken.Claims;

@@ -1,5 +1,8 @@
 package live.codeland.petsguidesbackend.config;
 
+import live.codeland.petsguidesbackend.config.jwt.JwtAuthenticationFilter;
+import live.codeland.petsguidesbackend.config.rateLimiting.RateLimitFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -14,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+    @Autowired
+    RateLimitFilter rateLimitFilter;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
@@ -29,6 +34,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(otherRequest ->otherRequest.anyRequest().authenticated())
                 .sessionManagement(sessionManagement->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

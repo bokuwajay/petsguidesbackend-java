@@ -1,6 +1,6 @@
 package live.codeland.petsguidesbackend.auth;
 
-import live.codeland.petsguidesbackend.config.JwtService;
+import live.codeland.petsguidesbackend.config.jwt.JwtService;
 import live.codeland.petsguidesbackend.model.User;
 import live.codeland.petsguidesbackend.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;

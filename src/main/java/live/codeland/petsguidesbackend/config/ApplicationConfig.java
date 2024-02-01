@@ -1,5 +1,7 @@
 package live.codeland.petsguidesbackend.config;
 
+import live.codeland.petsguidesbackend.config.rateLimiting.RateLimitFilter;
+import live.codeland.petsguidesbackend.config.rateLimiting.RateLimiter;
 import live.codeland.petsguidesbackend.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,4 +45,15 @@ public class ApplicationConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public RateLimiter rateLimiter(){
+        return new RateLimiter();
+    }
+
+    @Bean
+    public RateLimitFilter rateLimitFilter(){
+        return new RateLimitFilter();
+    }
+
 }
