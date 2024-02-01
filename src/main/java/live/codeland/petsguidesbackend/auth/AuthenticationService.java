@@ -3,6 +3,7 @@ package live.codeland.petsguidesbackend.auth;
 import live.codeland.petsguidesbackend.config.jwt.JwtService;
 import live.codeland.petsguidesbackend.model.User;
 import live.codeland.petsguidesbackend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,18 +14,21 @@ public class AuthenticationService {
 
     private final UserRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder;
-
-    private final JwtService jwtService;
-
-    private final AuthenticationManager authenticationManager;
-
-    public AuthenticationService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+    @Autowired
+    public AuthenticationService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
     }
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+
 
     public AuthenticationResponse register(User user) {
         String encodedPassword = passwordEncoder.encode((user.getPassword()));

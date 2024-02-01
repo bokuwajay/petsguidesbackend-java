@@ -1,6 +1,5 @@
 package live.codeland.petsguidesbackend.helpers;
 
-import live.codeland.petsguidesbackend.auth.AuthenticationResponse;
 import live.codeland.petsguidesbackend.model.ApiResponse;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
@@ -11,7 +10,6 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;

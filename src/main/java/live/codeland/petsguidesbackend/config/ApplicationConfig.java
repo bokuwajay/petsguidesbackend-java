@@ -1,10 +1,11 @@
 package live.codeland.petsguidesbackend.config;
 
-import live.codeland.petsguidesbackend.config.rateLimiting.RateLimitFilter;
 import live.codeland.petsguidesbackend.config.rateLimiting.RateLimiter;
 import live.codeland.petsguidesbackend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -15,10 +16,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
+@DependsOn("userRepository")
 public class ApplicationConfig {
 
     private final UserRepository userRepository;
 
+    @Autowired
     public ApplicationConfig(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -51,9 +54,5 @@ public class ApplicationConfig {
         return new RateLimiter();
     }
 
-    @Bean
-    public RateLimitFilter rateLimitFilter(){
-        return new RateLimitFilter();
-    }
 
 }

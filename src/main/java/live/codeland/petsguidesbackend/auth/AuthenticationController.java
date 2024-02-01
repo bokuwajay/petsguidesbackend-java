@@ -1,10 +1,9 @@
 package live.codeland.petsguidesbackend.auth;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import live.codeland.petsguidesbackend.model.ApiResponse;
 import live.codeland.petsguidesbackend.model.User;
-import live.codeland.petsguidesbackend.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDateTime;
 
@@ -23,12 +21,11 @@ import java.time.LocalDateTime;
 public class AuthenticationController {
 
     private final AuthenticationService authService;
-    private final UserService userService;
 
 
-    public AuthenticationController(AuthenticationService authService, UserService userService) {
+    @Autowired
+    public AuthenticationController(AuthenticationService authService) {
         this.authService = authService;
-        this.userService = userService;
     }
 
     @PostMapping("/registration")
@@ -42,14 +39,9 @@ public class AuthenticationController {
 
 
     @PostMapping("/authentication")
-    public ResponseEntity authenticate(@Valid @RequestBody AuthRequest authRequest ){
+    public ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@Valid @RequestBody AuthRequest authRequest ){
 
             AuthenticationResponse authResponse = authService.authenticate(authRequest);
-//            String fullDeepLinkUrl = "petsguides://codeland.live/goMap";
-//            response.sendRedirect(fullDeepLinkUrl);
-//            RedirectView redirectView = new RedirectView();
-//            redirectView.setUrl(fullDeepLinkUrl);
-//            return redirectView;
             String message = "Successfully Authenticated!";
             HttpStatus status = HttpStatus.OK;
             ApiResponse<AuthenticationResponse> response = new ApiResponse<>(status, status.value(), authResponse, message, LocalDateTime.now());
