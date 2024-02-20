@@ -1,6 +1,7 @@
 package live.codeland.petsguidesbackend.auth;
 
 import live.codeland.petsguidesbackend.config.jwt.JwtService;
+import live.codeland.petsguidesbackend.helpers.VerificationCodeGenerator;
 import live.codeland.petsguidesbackend.model.User;
 import live.codeland.petsguidesbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class AuthenticationService {
     public AuthenticationResponse register(User user) {
         String encodedPassword = passwordEncoder.encode((user.getPassword()));
         user.setPassword(encodedPassword);
+        user.setPhoneVerificationCode(VerificationCodeGenerator.generateVerificationCode());
+        user.setEmailVerificationCode(VerificationCodeGenerator.generateVerificationCode());
        User savedUser = userRepository.save(user);
         String jwtToken = jwtService.generateToken(savedUser);
         return new AuthenticationResponse(jwtToken);

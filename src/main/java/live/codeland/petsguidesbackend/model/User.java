@@ -60,7 +60,16 @@ public class User implements UserDetails {
 
 
 	@Field
-	private Boolean verified;
+	private Boolean emailVerified;
+
+	@Field
+	private Boolean phoneVerified;
+
+	@Field
+	private String emailVerificationCode;
+
+	@Field
+	private String phoneVerificationCode;
 
 	@Field
 	private String avatar;
@@ -85,7 +94,7 @@ public class User implements UserDetails {
 
 
 	// constructor
-	public User(String id, String firstName, String lastName, String email, String password, String phone, String avatar) {
+	public User(String id, String firstName, String lastName, String email, String password, String phone, String emailVerificationCode,String phoneVerificationCode, String avatar) {
 		this.id = id;
 		this.displayName = firstName + " " + lastName;
 		this.firstName = firstName;
@@ -93,7 +102,10 @@ public class User implements UserDetails {
 		this.email = email;
 		this.password = password;
 		this.phone = phone;
-		this.verified = false;
+		this.emailVerified = false;
+		this.phoneVerified =false;
+		this.emailVerificationCode = emailVerificationCode;
+		this.phoneVerificationCode = phoneVerificationCode;
 		this.avatar = avatar;
 		this.role = Role.USER;
 		this.createdAt = LocalDateTime.now();
@@ -134,9 +146,17 @@ public class User implements UserDetails {
 		return phone;
 	}
 
-	public Boolean getVerified() {
-		return verified;
+	public Boolean getEmailVerified() {
+		return emailVerified;
 	}
+
+	public Boolean getPhoneVerified() {
+		return phoneVerified;
+	}
+
+	public String getEmailVerificationCode() {return emailVerificationCode ;}
+
+	public String getPhoneVerificationCode() {return phoneVerificationCode;}
 
 	public String getAvatar() {
 		return avatar;
@@ -191,9 +211,17 @@ public class User implements UserDetails {
 		this.phone = phone;
 	}
 
-	public void setVerified(Boolean verified) {
-		this.verified = verified;
+	public void setEmailVerified(Boolean emailVerified) {
+		this.emailVerified = emailVerified;
 	}
+
+	public void setPhoneVerified(Boolean phoneVerified) {
+		this.phoneVerified = phoneVerified;
+	}
+
+	public void setPhoneVerificationCode(String phoneVerificationCode) {this.phoneVerificationCode = phoneVerificationCode;}
+
+	public void setEmailVerificationCode(String emailVerificationCode) {this.emailVerificationCode = emailVerificationCode;}
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
