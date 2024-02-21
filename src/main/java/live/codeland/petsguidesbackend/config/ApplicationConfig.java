@@ -1,6 +1,7 @@
 package live.codeland.petsguidesbackend.config;
 
 import live.codeland.petsguidesbackend.config.rateLimiting.RateLimiter;
+import live.codeland.petsguidesbackend.helpers.EmailHelper;
 import live.codeland.petsguidesbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -27,12 +28,13 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
-        return username -> userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public UserDetailsService userDetailsService() {
+        return username -> userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -40,7 +42,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
@@ -50,9 +52,13 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public RateLimiter rateLimiter(){
+    public RateLimiter rateLimiter() {
         return new RateLimiter();
     }
 
+    @Bean
+    public EmailHelper emailHelper() {
+        return new EmailHelper();
+    }
 
 }

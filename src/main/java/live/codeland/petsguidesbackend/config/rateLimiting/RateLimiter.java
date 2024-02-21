@@ -7,7 +7,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class RateLimiter {
     private static final int MAX_REQUESTS_PER_MINUTE = 80;
@@ -36,6 +35,5 @@ public class RateLimiter {
             return false;
         }
     }
-
 
 }

@@ -36,7 +36,7 @@ public class AuthenticationService {
         user.setPassword(encodedPassword);
         user.setPhoneVerificationCode(VerificationCodeGenerator.generateVerificationCode());
         user.setEmailVerificationCode(VerificationCodeGenerator.generateVerificationCode());
-       User savedUser = userRepository.save(user);
+        User savedUser = userRepository.save(user);
         String jwtToken = jwtService.generateToken(savedUser);
         return new AuthenticationResponse(jwtToken);
     }

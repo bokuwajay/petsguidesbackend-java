@@ -24,7 +24,6 @@ dependencies {
 	implementation("org.projectlombok:lombok:1.18.26")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-
 	// mongoDB
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	// validate if the data match the entity by the annotation in model
@@ -41,6 +40,12 @@ dependencies {
 
 	// Spring Security for authentication and authorization and password encode
 	implementation("org.springframework.boot:spring-boot-starter-security")
+
+	// JavaMailSender
+	implementation("org.springframework.boot:spring-boot-starter-mail:3.2.2")
+
+	// email template
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf:3.2.2")
 
 
 	runtimeOnly("org.springframework.boot:spring-boot-devtools")
