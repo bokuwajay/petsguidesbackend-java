@@ -47,6 +47,9 @@ dependencies {
 	// email template
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf:3.2.2")
 
+	// phone SMS verification
+	implementation("com.twilio.sdk:twilio:10.0.0")
+
 
 	runtimeOnly("org.springframework.boot:spring-boot-devtools")
 }

@@ -16,9 +16,6 @@ public class EmailHelper {
     @Autowired
     private TemplateEngine templateEngine;
 
-    public EmailHelper(){
-
-    }
 
     public boolean sendVerificationEmail(String emailAddress, String templateName, Context context) {
         StringBuffer reason = null;

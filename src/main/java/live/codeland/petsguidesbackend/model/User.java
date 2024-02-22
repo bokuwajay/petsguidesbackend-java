@@ -1,5 +1,7 @@
 package live.codeland.petsguidesbackend.model;
 
+import com.mongodb.client.model.CollationStrength;
+import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +15,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.data.mongodb.core.query.Collation.SecondaryICUComparisonLevel;
 
 
 import java.time.LocalDateTime;
@@ -68,8 +71,6 @@ public class User implements UserDetails {
 	@Field
 	private String emailVerificationCode;
 
-	@Field
-	private String phoneVerificationCode;
 
 	@Field
 	private String avatar;
@@ -94,7 +95,7 @@ public class User implements UserDetails {
 
 
 	// constructor
-	public User(String id, String firstName, String lastName, String email, String password, String phone, String emailVerificationCode,String phoneVerificationCode, String avatar) {
+	public User(String id, String firstName, String lastName, String email, String password, String phone, String emailVerificationCode, String avatar) {
 		this.id = id;
 		this.displayName = firstName + " " + lastName;
 		this.firstName = firstName;
@@ -105,7 +106,6 @@ public class User implements UserDetails {
 		this.emailVerified = false;
 		this.phoneVerified =false;
 		this.emailVerificationCode = emailVerificationCode;
-		this.phoneVerificationCode = phoneVerificationCode;
 		this.avatar = avatar;
 		this.role = Role.USER;
 		this.createdAt = LocalDateTime.now();
@@ -155,8 +155,6 @@ public class User implements UserDetails {
 	}
 
 	public String getEmailVerificationCode() {return emailVerificationCode ;}
-
-	public String getPhoneVerificationCode() {return phoneVerificationCode;}
 
 	public String getAvatar() {
 		return avatar;
@@ -219,7 +217,6 @@ public class User implements UserDetails {
 		this.phoneVerified = phoneVerified;
 	}
 
-	public void setPhoneVerificationCode(String phoneVerificationCode) {this.phoneVerificationCode = phoneVerificationCode;}
 
 	public void setEmailVerificationCode(String emailVerificationCode) {this.emailVerificationCode = emailVerificationCode;}
 

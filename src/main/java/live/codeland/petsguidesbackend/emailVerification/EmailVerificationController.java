@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/v1/verification")
+@RequestMapping("/api/v1/verification/email")
 @Validated
 public class EmailVerificationController {
 
@@ -22,7 +22,7 @@ public class EmailVerificationController {
         this.emailVerificationService = emailVerificationService;
     }
 
-    @PostMapping("/email/code-delivery")
+    @PostMapping("/code-delivery")
     public ResponseEntity<ApiResponse<EmailVerificationResponse>> emailVerificationCodeDelivery(HttpServletRequest request){
         final String authHeader = request.getHeader("Authorization");
         final String jwt = authHeader.substring(7);
@@ -33,7 +33,7 @@ public class EmailVerificationController {
         return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
     }
 
-    @PatchMapping("/email/code-confirmation")
+    @PatchMapping("/code-confirmation")
     public ResponseEntity<ApiResponse<EmailVerificationResponse>> emailVerificationCodeConfirmation(HttpServletRequest request){
         final String userInputCode = request.getParameter("userInputCode").toLowerCase();
         final String authHeader = request.getHeader("Authorization");
