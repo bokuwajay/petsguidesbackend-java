@@ -31,16 +31,15 @@ public class AuthenticationService {
 
 
 
-    public AuthenticationResponse register(User user) {
+    public String register(User user) {
         String encodedPassword = passwordEncoder.encode((user.getPassword()));
         user.setPassword(encodedPassword);
         user.setEmailVerificationCode(VerificationCodeGenerator.generateVerificationCode());
         User savedUser = userRepository.save(user);
-        String jwtToken = jwtService.generateToken(savedUser);
-        return new AuthenticationResponse(jwtToken);
+        return jwtService.generateToken(savedUser);
     }
 
-    public AuthenticationResponse authenticate(AuthRequest authRequest) {
+    public String authenticate(AuthRequest authRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authRequest.getEmail(),
@@ -50,7 +49,6 @@ public class AuthenticationService {
         User foundUser = userRepository.findByEmail(authRequest.getEmail())
                 .orElseThrow();
 
-        String jwtToken = jwtService.generateToken(foundUser);
-        return new AuthenticationResponse(jwtToken);
+        return jwtService.generateToken(foundUser);
     }
 }

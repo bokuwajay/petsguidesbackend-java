@@ -1,7 +1,5 @@
 package live.codeland.petsguidesbackend.model;
 
-import com.mongodb.client.model.CollationStrength;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
@@ -15,13 +13,10 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.data.mongodb.core.query.Collation.SecondaryICUComparisonLevel;
-
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-
 
 @Document(collection = "user")
 public class User implements UserDetails {
@@ -61,7 +56,6 @@ public class User implements UserDetails {
 	@Pattern(regexp = "^(?:\\+852-?)?[456789]\\d{3}-?\\d{4}$", message = "Invalid phone number")
 	private String phone;
 
-
 	@Field
 	private Boolean emailVerified;
 
@@ -71,14 +65,12 @@ public class User implements UserDetails {
 	@Field
 	private String emailVerificationCode;
 
-
 	@Field
 	private String avatar;
 
 	@Field
 	@Enumerated(EnumType.STRING)
 	private Role role;
-
 
 	@Field
 	private LocalDateTime createdAt;
@@ -92,10 +84,9 @@ public class User implements UserDetails {
 	@Field
 	private LocalDateTime deletedAt;
 
-
-
 	// constructor
-	public User(String id, String firstName, String lastName, String email, String password, String phone, String emailVerificationCode, String avatar) {
+	public User(String id, String firstName, String lastName, String email, String password, String phone,
+			String emailVerificationCode, String avatar) {
 		this.id = id;
 		this.displayName = firstName + " " + lastName;
 		this.firstName = firstName;
@@ -104,7 +95,7 @@ public class User implements UserDetails {
 		this.password = password;
 		this.phone = phone;
 		this.emailVerified = false;
-		this.phoneVerified =false;
+		this.phoneVerified = false;
 		this.emailVerificationCode = emailVerificationCode;
 		this.avatar = avatar;
 		this.role = Role.USER;
@@ -113,8 +104,6 @@ public class User implements UserDetails {
 		this.deleted = false;
 		this.deletedAt = null;
 	}
-
-
 
 	// getter
 	public String getId() {
@@ -154,17 +143,25 @@ public class User implements UserDetails {
 		return phoneVerified;
 	}
 
-	public String getEmailVerificationCode() {return emailVerificationCode ;}
+	public String getEmailVerificationCode() {
+		return emailVerificationCode;
+	}
 
 	public String getAvatar() {
 		return avatar;
 	}
 
-	public String getRoles() { return role.name(); }
+	public String getRoles() {
+		return role.name();
+	}
 
-	public LocalDateTime getCreatedAt() { return createdAt; }
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-	public LocalDateTime getUpdatedAt() { return updatedAt; }
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
 
 	public Boolean getDeleted() {
 		return deleted;
@@ -174,11 +171,6 @@ public class User implements UserDetails {
 		return deletedAt;
 	}
 
-
-
-
-
-
 	// setter
 	public void setId(String id) {
 		this.id = id;
@@ -187,7 +179,6 @@ public class User implements UserDetails {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
@@ -217,16 +208,21 @@ public class User implements UserDetails {
 		this.phoneVerified = phoneVerified;
 	}
 
-
-	public void setEmailVerificationCode(String emailVerificationCode) {this.emailVerificationCode = emailVerificationCode;}
+	public void setEmailVerificationCode(String emailVerificationCode) {
+		this.emailVerificationCode = emailVerificationCode;
+	}
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
 
-	public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 
-	public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
@@ -236,12 +232,13 @@ public class User implements UserDetails {
 		this.deletedAt = deletedAt;
 	}
 
-
-
 	// below is UserDetails-related information
-	// These fields are part of the UserDetails contract, and Spring Security manages them internally.
-	// When Spring Security loads a user from the database, it uses the information stored in the User entity
-	// and combines it with below UserDetails-related information. (we cannot see them in MongoCompass, but can see it when call get user API)
+	// These fields are part of the UserDetails contract, and Spring Security
+	// manages them internally.
+	// When Spring Security loads a user from the database, it uses the information
+	// stored in the User entity
+	// and combines it with below UserDetails-related information. (we cannot see
+	// them in MongoCompass, but can see it when call get user API)
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(role.name()));

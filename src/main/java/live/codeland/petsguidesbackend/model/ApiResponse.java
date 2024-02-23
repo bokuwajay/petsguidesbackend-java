@@ -1,6 +1,8 @@
 package live.codeland.petsguidesbackend.model;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 
 import java.time.LocalDateTime;
@@ -39,5 +41,9 @@ public class ApiResponse<T> {
 
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public ResponseEntity<ApiResponse<T>> toClient(){
+        return new ResponseEntity<>(this, new HttpHeaders(), this.getStatus());
     }
 }

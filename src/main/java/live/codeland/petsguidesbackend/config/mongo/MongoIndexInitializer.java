@@ -24,8 +24,13 @@ public class MongoIndexInitializer implements InitializingBean {
 
     private void createUniqueIndex(){
         IndexOperations indexOperations = mongoTemplate.indexOps("user");
-        Index index = new Index();
-        index.on("email", Sort.Direction.ASC).unique().collation(Collation.of("en").strength(Collation.ComparisonLevel.secondary()));
-        indexOperations.ensureIndex(index);
+        Index emailIndex = new Index();
+        emailIndex.on("email", Sort.Direction.ASC).unique().collation(Collation.of("en").strength(Collation.ComparisonLevel.secondary()));
+
+        Index phoneIndex = new Index();
+        phoneIndex.on("phone", Sort.Direction.ASC).unique().collation(Collation.of("en").strength(Collation.ComparisonLevel.secondary()));
+
+        indexOperations.ensureIndex(emailIndex);
+        indexOperations.ensureIndex(phoneIndex);
     }
 }

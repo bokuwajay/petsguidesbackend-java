@@ -13,13 +13,13 @@ import java.util.Optional;
 @Service
 public class EmailVerificationService {
 
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private EmailHelper emailHelper;
+    private final EmailHelper emailHelper;
 
-    private UserService userService;
+    private final UserService userService;
 
     EmailVerificationService(JwtService jwtService, UserRepository userRepository, EmailHelper emailHelper, UserService userService){
         this.jwtService = jwtService;
@@ -28,33 +28,32 @@ public class EmailVerificationService {
         this.userService = userService;
     }
 
-    public EmailVerificationResponse emailVerificationCodeDelivery(String jwt){
+    public String emailVerificationCodeDelivery(String jwt){
         Context context = new Context();
         final String userEmail = jwtService.extractUsername(jwt);
         Optional<User> user = userRepository.findByEmail(userEmail);
         final String emailVerificationCode = user.get().getEmailVerificationCode();
         context.setVariable("verificationCode", emailVerificationCode);
-      boolean successfullySent =  emailHelper.sendVerificationEmail(userEmail, "email-template", context);
-      if(successfullySent){
-          String jwtToken = jwtService.generateToken(user.get());
-          return new EmailVerificationResponse(jwtToken);
-      } else {
-          return new EmailVerificationResponse(null);
-      }
-
+        boolean successfullySent =  emailHelper.sendVerificationEmail(userEmail, "email-template", context);
+        if(successfullySent){
+            return jwtService.generateToken(user.get());
+        }
+        return null;
     }
 
-    public EmailVerificationResponse emailVerificationCodeConfirmation(String jwt, String userInputCode ){
+    public String emailVerificationCodeConfirmation(String jwt, String userInputCode ){
         final String userEmail = jwtService.extractUsername(jwt);
         Optional<User> user = userRepository.findByEmail(userEmail);
-        String userId = user.get().getId();
-        final String dbVerificationCode = user.get().getEmailVerificationCode().toLowerCase();
 
-        if(userInputCode.equals(dbVerificationCode)){
-            user.get().setEmailVerified(true);
-          User updatedUser = userService.updateUser(userId,user.get());
-            String jwtToken = jwtService.generateToken(updatedUser);
-            return new EmailVerificationResponse(jwtToken);
+        if(user.isPresent()){
+            String userId = user.get().getId();
+            final String dbVerificationCode = user.get().getEmailVerificationCode().toLowerCase();
+
+            if(userInputCode.equals(dbVerificationCode)){
+                user.get().setEmailVerified(true);
+                User updatedUser = userService.updateUser(userId,user.get());
+                return jwtService.generateToken(updatedUser);
+            }
         }
         return null;
     }

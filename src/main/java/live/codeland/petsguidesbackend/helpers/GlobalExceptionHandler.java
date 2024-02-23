@@ -2,7 +2,6 @@ package live.codeland.petsguidesbackend.helpers;
 
 import live.codeland.petsguidesbackend.model.ApiResponse;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -22,55 +21,50 @@ public class GlobalExceptionHandler {
 
     // 400 Bad request (missing payload / data type incorrect)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ApiResponse<Object>> handleValidationException(MethodArgumentNotValidException exception) {
         List<String> exceptionMessages = exception.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> String.format("%s: %s (Rejected value: %s)",
                         fieldError.getField(),
                         fieldError.getDefaultMessage(),
                         fieldError.getRejectedValue()))
                 .collect(Collectors.toList());
-
-        String exceptionMessage = String.join(", ", exceptionMessages);
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        ApiResponse<Object> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
-        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
+        ApiResponse<Object> exceptionResponse = new ApiResponse<>(HttpStatus.BAD_REQUEST, 400, null,
+                String.join(", ", exceptionMessages), LocalDateTime.now());
+        return exceptionResponse.toClient();
     }
 
     // The auth pass the filter, but the password / email is wrong
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Object> handleAuthenticationException(AuthenticationException exception){
-        String exceptionMessage = exception.getMessage();
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
-        ApiResponse<Object> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
-        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
-    }
-    
-    // 405 wrong http request method (GET/PATCH/POST/DELETE)
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<Object> handleHttpException(HttpRequestMethodNotSupportedException exception){
-        String exceptionMessage = exception.getBody().getDetail();
-        HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;
-        ApiResponse<Object> exceptionResponse = new ApiResponse<>(status, status.value(), null,exceptionMessage, LocalDateTime.now());
-        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
+    public ResponseEntity<ApiResponse<Object>> handleAuthenticationException(AuthenticationException exception) {
+        ApiResponse<Object> exceptionResponse = new ApiResponse<>(HttpStatus.UNAUTHORIZED, 401, null,
+                exception.getMessage(), LocalDateTime.now());
+        return exceptionResponse.toClient();
     }
 
+    // 405 wrong http request method (GET/PATCH/POST/DELETE)
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleHttpException(HttpRequestMethodNotSupportedException exception) {
+        ApiResponse<Object> exceptionResponse = new ApiResponse<>(HttpStatus.METHOD_NOT_ALLOWED, 405, null,
+                exception.getBody().getDetail(), LocalDateTime.now());
+        return exceptionResponse.toClient();
+    }
 
     // 409 data duplicated in DB
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<Object> handleDuplicateKeyException(DuplicateKeyException exception){
+    public ResponseEntity<ApiResponse<Object>> handleDuplicateKeyException(DuplicateKeyException exception) {
         final String exceptionMessage;
         Pattern pattern = Pattern.compile("dup key: \\{([^}]*)\\}");
         Matcher matcher = pattern.matcher(exception.getMessage());
-        if(matcher.find()){
+        if (matcher.find()) {
             String matchedString = "Duplicate data {" + matcher.group(1) + "}";
             exceptionMessage = matchedString.replace("\"", "");
         } else {
             exceptionMessage = "Duplicate Exception: " + exception.getMessage();
         }
-        HttpStatus status = HttpStatus.CONFLICT;
-        ApiResponse<Object> exceptionResponse = new ApiResponse<>(status, status.value(), null, exceptionMessage, LocalDateTime.now());
-        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getStatus());
-    }
 
+        ApiResponse<Object> exceptionResponse = new ApiResponse<>(HttpStatus.CONFLICT, 409, null, exceptionMessage,
+                LocalDateTime.now());
+        return exceptionResponse.toClient();
+    }
 
 }

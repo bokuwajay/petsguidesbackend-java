@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import live.codeland.petsguidesbackend.model.ApiResponse;
 import live.codeland.petsguidesbackend.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,31 +21,25 @@ public class AuthenticationController {
 
     private final AuthenticationService authService;
 
-
     @Autowired
     public AuthenticationController(AuthenticationService authService) {
         this.authService = authService;
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<ApiResponse<AuthenticationResponse>> register(@Valid @RequestBody User user){
-            AuthenticationResponse authResponse = authService.register(user);
-            String message = "Successfully registered!";
-            HttpStatus status = HttpStatus.OK;
-            ApiResponse<AuthenticationResponse> response = new ApiResponse<>(status, status.value(), authResponse, message, LocalDateTime.now());
-            return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
+    public ResponseEntity<ApiResponse<String>> register(@Valid @RequestBody User user) {
+        String jwtToken = authService.register(user);
+        ApiResponse<String> response = new ApiResponse<>(HttpStatus.OK, 200, jwtToken, "Successfully registered!",
+                LocalDateTime.now());
+        return response.toClient();
     }
 
-
     @PostMapping("/authentication")
-    public ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@Valid @RequestBody AuthRequest authRequest ){
-
-            AuthenticationResponse authResponse = authService.authenticate(authRequest);
-            String message = "Successfully Authenticated!";
-            HttpStatus status = HttpStatus.OK;
-            ApiResponse<AuthenticationResponse> response = new ApiResponse<>(status, status.value(), authResponse, message, LocalDateTime.now());
-            return new ResponseEntity<>(response, new HttpHeaders(), response.getStatus());
-
+    public ResponseEntity<ApiResponse<String>> authenticate(@Valid @RequestBody AuthRequest authRequest) {
+        String jwtToken = authService.authenticate(authRequest);
+        ApiResponse<String> response = new ApiResponse<>(HttpStatus.OK, 200, jwtToken, "Successfully Authenticated!",
+                LocalDateTime.now());
+        return response.toClient();
     }
 
 }
