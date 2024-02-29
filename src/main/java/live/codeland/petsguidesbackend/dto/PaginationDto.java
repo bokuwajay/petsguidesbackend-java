@@ -1,4 +1,4 @@
-package live.codeland.petsguidesbackend.helpers.dto;
+package live.codeland.petsguidesbackend.dto;
 
 import java.util.List;
 

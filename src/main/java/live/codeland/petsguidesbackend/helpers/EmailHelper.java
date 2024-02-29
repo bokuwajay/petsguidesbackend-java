@@ -32,21 +32,6 @@ public class EmailHelper {
         } catch (MessagingException exception){
             System.out.println("Messaging Exception: " + exception.getMessage());
             return false;
-        } catch (Exception ex){
-            StringBuffer exception = new StringBuffer(ex.getMessage().toString());
-            if (exception.indexOf("ConnectException") >= 0) {
-                reason = new StringBuffer(" Unable to Connect Mail server");
-                return false;
-            } else if (exception.indexOf("SendFailedException") >= 0){
-                reason = new StringBuffer("Wrong To Mail address");
-                return false;
-            } else if (exception.indexOf("FileNotFoundException") >= 0){
-                reason = new StringBuffer("File Not Found at Specific location");
-                return false;
-            } else {
-                reason = new StringBuffer("Email has not been sent.");
-                return false;
-            }
         }
 
     }

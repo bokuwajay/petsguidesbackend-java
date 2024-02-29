@@ -1,7 +1,7 @@
 package live.codeland.petsguidesbackend.controller;
 
-import live.codeland.petsguidesbackend.helpers.dto.PaginationDto;
-import live.codeland.petsguidesbackend.model.ApiResponse;
+import live.codeland.petsguidesbackend.dto.PaginationDto;
+import live.codeland.petsguidesbackend.dto.ApiResponseDto;
 import live.codeland.petsguidesbackend.model.User;
 import live.codeland.petsguidesbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,71 +11,65 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @Validated
-public class UserController {
+public class UserController extends BaseController<User, String>{
     private final UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
+        super(userService);
         this.userService = userService;
-
     }
 
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse<PaginationDto<User>>> getAllUser(
+    public ResponseEntity<ApiResponseDto<PaginationDto<User>>> getAllUser(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "asc") String orderBy) {
-        try {
-            PaginationDto<User> userResponse = userService.getAllUser(page, limit, sortBy, orderBy);
-            ApiResponse<PaginationDto<User>> response;
-            if (!userResponse.getList().isEmpty()) {
-                response = new ApiResponse<>(HttpStatus.OK, 200, userResponse, "Successfully get all users",
-                        LocalDateTime.now());
-            } else {
-                response = new ApiResponse<>(HttpStatus.NOT_FOUND, 404, null, "No user found", LocalDateTime.now());
-            }
-            return response.toClient();
-        } catch (Exception exception) {
-            ApiResponse<PaginationDto<User>> exceptionResponse = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR,
-                    500, null, "Catch in controller getAllUser: " + exception.getMessage(), LocalDateTime.now());
-            return exceptionResponse.toClient();
-        }
+
+        return super.findAll(page, limit, sortBy, orderBy);
+
     }
 
     @GetMapping("/profile/{id}")
-    public User getUserById(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDto<Optional<User>>> getUserById(@PathVariable String id) {
 
-        return userService.getUserById(id).orElse(null);
+        return super.findById(id);
     }
 
-    @PatchMapping("/profile/{id}")
-    public User updateUser(@PathVariable String id, @RequestBody User user) {
+    //save all
 
-        return userService.updateUser(id, user);
+    // save 1
+
+
+    // update all
+        @PatchMapping("/profile/{id}")
+    public ResponseEntity<ApiResponseDto<User>> updateUser(@PathVariable String id, @RequestBody User user) {
+
+        return super.updateOne()
+
     }
 
+    // update 1
+
+    // soft delete all
+
+
+    //  soft delete 1
     @DeleteMapping("/profile/{id}")
-    public ResponseEntity<ApiResponse<User>> softDeleteUser(@PathVariable String id) {
-        try {
-            User deletedUser = userService.softDeleteUser(id);
-            ApiResponse<User> response;
-            if (deletedUser != null) {
-                response = new ApiResponse<>(HttpStatus.OK, 200, deletedUser, "Successfully deleted a user",
-                        LocalDateTime.now());
-            } else {
-                response = new ApiResponse<>(HttpStatus.NOT_FOUND, 404, null, "Cannot found the user by this id",
-                        LocalDateTime.now());
-            }
-            return response.toClient();
-        } catch (Exception exception) {
-            ApiResponse<User> exceptionResponse = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, 500, null,
-                    "Catch in controller softDeleteUser: " + exception.getMessage(), LocalDateTime.now());
-            return exceptionResponse.toClient();
-        }
+    public ResponseEntity<ApiResponseDto<User>> softDeleteUserById(@PathVariable String id) {
+
+        return super.softDeleteOne(id);
     }
+
+//    @PatchMapping("/profile/{id}")
+//    public User updateUser(@PathVariable String id, @RequestBody User user) {
+//
+//        return userService.updateUser(id, user);
+//    }
+
 }

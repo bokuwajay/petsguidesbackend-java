@@ -9,15 +9,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
+@Service
+public class UserServiceImpl extends BaseServiceImpl<User, String> implements UserService {
 
-public interface UserService extends BaseService<User, String> {
+    private final UserRepository userRepository;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
+        super(userRepository);
+        this.userRepository = userRepository;
+    }
 
 }
-
-
-
-

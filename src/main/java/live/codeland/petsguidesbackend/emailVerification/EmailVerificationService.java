@@ -51,7 +51,7 @@ public class EmailVerificationService {
 
             if(userInputCode.equals(dbVerificationCode)){
                 user.get().setEmailVerified(true);
-                User updatedUser = userService.updateUser(userId,user.get());
+                User updatedUser = userService.updateOne(user.get());
                 return jwtService.generateToken(updatedUser);
             }
         }

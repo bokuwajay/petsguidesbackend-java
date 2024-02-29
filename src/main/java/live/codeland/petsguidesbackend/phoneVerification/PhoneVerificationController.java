@@ -3,7 +3,7 @@ package live.codeland.petsguidesbackend.phoneVerification;
 import com.twilio.exception.ApiConnectionException;
 import com.twilio.exception.ApiException;
 import jakarta.servlet.http.HttpServletRequest;
-import live.codeland.petsguidesbackend.model.ApiResponse;
+import live.codeland.petsguidesbackend.dto.ApiResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,51 +26,51 @@ public class PhoneVerificationController {
     }
 
     @PostMapping("/code-delivery")
-    public ResponseEntity<ApiResponse<Object>> phoneVerificationCodeDelivery(HttpServletRequest request){
+    public ResponseEntity<ApiResponseDto<Object>> phoneVerificationCodeDelivery(HttpServletRequest request){
         try {
             final String authHeader = request.getHeader("Authorization");
             final String jwt = authHeader.substring(7);
             String jwtToken = phoneVerificationService.phoneVerificationCodeDelivery(jwt);
-            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK, 200, jwtToken, "Successfully sent phone verification code!", LocalDateTime.now());
+            ApiResponseDto<Object> response = new ApiResponseDto<>(HttpStatus.OK, 200, jwtToken, "Successfully sent phone verification code!", LocalDateTime.now());
             return response.toClient();
         } catch (ApiException exception){
 
-            ApiResponse<Object> exceptionResponse = new ApiResponse<>(HttpStatus.resolve(exception.getStatusCode()), exception.getStatusCode(), null, "Catch API Exception in phone verification code delivery: " + exception.getMessage(), LocalDateTime.now());
+            ApiResponseDto<Object> exceptionResponse = new ApiResponseDto<>(HttpStatus.resolve(exception.getStatusCode()), exception.getStatusCode(), null, "Catch API Exception in phone verification code delivery: " + exception.getMessage(), LocalDateTime.now());
             return exceptionResponse.toClient();
 
         } catch (ApiConnectionException exception){
 
-            ApiResponse<Object> exceptionResponse = new ApiResponse<>(HttpStatus.BAD_GATEWAY, 502, null, "Catch Connection Exception in phone verification code delivery: " + exception.getMessage(), LocalDateTime.now());
+            ApiResponseDto<Object> exceptionResponse = new ApiResponseDto<>(HttpStatus.BAD_GATEWAY, 502, null, "Catch Connection Exception in phone verification code delivery: " + exception.getMessage(), LocalDateTime.now());
             return exceptionResponse.toClient();
 
         } catch (Exception exception) {
 
-            ApiResponse<Object> exceptionResponse = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, 500, null, "Catch run time exception in phone verification code delivery: " + exception.getMessage(), LocalDateTime.now());
+            ApiResponseDto<Object> exceptionResponse = new ApiResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, 500, null, "Catch run time exception in phone verification code delivery: " + exception.getMessage(), LocalDateTime.now());
             return exceptionResponse.toClient();
         }
     }
 
     @PostMapping("/code-confirmation")
-    public ResponseEntity<ApiResponse<Object>> phoneVerificationCodeConfirmation(@RequestParam String userInputCode, HttpServletRequest request){
+    public ResponseEntity<ApiResponseDto<Object>> phoneVerificationCodeConfirmation(@RequestParam String userInputCode, HttpServletRequest request){
         try {
             final String authHeader = request.getHeader("Authorization");
             final String jwt = authHeader.substring(7);
             String jwtToken = phoneVerificationService.phoneVerificationCodeConfirmation(jwt, userInputCode);
-            ApiResponse<Object> response = new ApiResponse<>(HttpStatus.OK, 200, jwtToken, "Successfully validate phone verification code!", LocalDateTime.now());
+            ApiResponseDto<Object> response = new ApiResponseDto<>(HttpStatus.OK, 200, jwtToken, "Successfully validate phone verification code!", LocalDateTime.now());
             return response.toClient();
         } catch (ApiException exception){
 
-            ApiResponse<Object> exceptionResponse = new ApiResponse<>(HttpStatus.resolve(exception.getStatusCode()), exception.getStatusCode(), null, "Catch API Exception in phone verification code confirmation: " + exception.getMessage(), LocalDateTime.now());
+            ApiResponseDto<Object> exceptionResponse = new ApiResponseDto<>(HttpStatus.resolve(exception.getStatusCode()), exception.getStatusCode(), null, "Catch API Exception in phone verification code confirmation: " + exception.getMessage(), LocalDateTime.now());
             return exceptionResponse.toClient();
 
         } catch (ApiConnectionException exception){
 
-            ApiResponse<Object> exceptionResponse = new ApiResponse<>(HttpStatus.BAD_GATEWAY, 502, null, "Catch Connection Exception in phone verification code confirmation: " + exception.getMessage(), LocalDateTime.now());
+            ApiResponseDto<Object> exceptionResponse = new ApiResponseDto<>(HttpStatus.BAD_GATEWAY, 502, null, "Catch Connection Exception in phone verification code confirmation: " + exception.getMessage(), LocalDateTime.now());
             return exceptionResponse.toClient();
 
         } catch (Exception exception) {
 
-            ApiResponse<Object> exceptionResponse = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, 500, null, "Catch run time exception in phone verification code confirmation: " + exception.getMessage(), LocalDateTime.now());
+            ApiResponseDto<Object> exceptionResponse = new ApiResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR, 500, null, "Catch run time exception in phone verification code confirmation: " + exception.getMessage(), LocalDateTime.now());
             return exceptionResponse.toClient();
         }
 

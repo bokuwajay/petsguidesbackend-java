@@ -1,7 +1,7 @@
 package live.codeland.petsguidesbackend.auth;
 
 import jakarta.validation.Valid;
-import live.codeland.petsguidesbackend.model.ApiResponse;
+import live.codeland.petsguidesbackend.dto.ApiResponseDto;
 import live.codeland.petsguidesbackend.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,17 +27,17 @@ public class AuthenticationController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<ApiResponse<String>> register(@Valid @RequestBody User user) {
+    public ResponseEntity<ApiResponseDto<String>> register(@Valid @RequestBody User user) {
         String jwtToken = authService.register(user);
-        ApiResponse<String> response = new ApiResponse<>(HttpStatus.OK, 200, jwtToken, "Successfully registered!",
+        ApiResponseDto<String> response = new ApiResponseDto<>(HttpStatus.OK, 200, jwtToken, "Successfully registered!",
                 LocalDateTime.now());
         return response.toClient();
     }
 
     @PostMapping("/authentication")
-    public ResponseEntity<ApiResponse<String>> authenticate(@Valid @RequestBody AuthRequest authRequest) {
+    public ResponseEntity<ApiResponseDto<String>> authenticate(@Valid @RequestBody AuthRequest authRequest) {
         String jwtToken = authService.authenticate(authRequest);
-        ApiResponse<String> response = new ApiResponse<>(HttpStatus.OK, 200, jwtToken, "Successfully Authenticated!",
+        ApiResponseDto<String> response = new ApiResponseDto<>(HttpStatus.OK, 200, jwtToken, "Successfully Authenticated!",
                 LocalDateTime.now());
         return response.toClient();
     }

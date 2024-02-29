@@ -1,4 +1,4 @@
-package live.codeland.petsguidesbackend.model;
+package live.codeland.petsguidesbackend.dto;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 
-public class ApiResponse<T> {
+public class ApiResponseDto<T> {
     private final HttpStatus status;
 
     private final Integer statusCode;
@@ -15,7 +15,7 @@ public class ApiResponse<T> {
     private final String detail;
     private final LocalDateTime timestamp;
 
-    public ApiResponse(HttpStatus status, Integer statusCode,T data, String detail, LocalDateTime timestamp) {
+    public ApiResponseDto(HttpStatus status, Integer statusCode, T data, String detail, LocalDateTime timestamp) {
         this.status = status;
         this.statusCode = statusCode;
         this.data = data;
@@ -43,7 +43,7 @@ public class ApiResponse<T> {
         return timestamp;
     }
 
-    public ResponseEntity<ApiResponse<T>> toClient(){
+    public ResponseEntity<ApiResponseDto<T>> toClient(){
         return new ResponseEntity<>(this, new HttpHeaders(), this.getStatus());
     }
 }
