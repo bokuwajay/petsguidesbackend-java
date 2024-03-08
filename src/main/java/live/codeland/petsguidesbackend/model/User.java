@@ -18,8 +18,9 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+
 @Document(collection = "user")
-public class User implements UserDetails {
+public class User implements UserDetails, Identifiable {
 	// fields
 	@Id
 	private String id;
@@ -53,7 +54,7 @@ public class User implements UserDetails {
 	@NotNull
 	@NotBlank
 	@Indexed(unique = true)
-	@Pattern(regexp = "^(?:\\+852-?)?[456789]\\d{3}-?\\d{4}$", message = "Invalid phone number")
+	@Pattern(regexp = "^\\+852-?[456789]\\d{3}-?\\d{4}$", message = "Invalid phone number")
 	private String phone;
 
 	@Field
@@ -106,8 +107,9 @@ public class User implements UserDetails {
 	}
 
 	// getter
+	@Override
 	public String getId() {
-		return id;
+		return this.id;
 	}
 
 	public String getDisplayName() {

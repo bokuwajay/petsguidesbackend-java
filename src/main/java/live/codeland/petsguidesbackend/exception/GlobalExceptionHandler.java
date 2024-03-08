@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+
     // 400 Bad request (missing payload / data type incorrect)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponseDto<Object>> handleValidationException(MethodArgumentNotValidException exception) {

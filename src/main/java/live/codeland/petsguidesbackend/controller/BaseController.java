@@ -2,14 +2,16 @@ package live.codeland.petsguidesbackend.controller;
 
 import live.codeland.petsguidesbackend.dto.ApiResponseDto;
 import live.codeland.petsguidesbackend.dto.PaginationDto;
+import live.codeland.petsguidesbackend.model.Identifiable;
 import live.codeland.petsguidesbackend.service.BaseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,11 +47,12 @@ public abstract class BaseController<T, ID> {
         try {
             Optional<T> item = baseService.findById(id);
             ApiResponseDto<Optional<T>> response;
-            if(!item.isEmpty()){
+            if(item.isPresent()){
                 response = new ApiResponseDto<>(HttpStatus.OK, 200, item, "Successfully find by ID ",
                         LocalDateTime.now());
             } else {
                 response = new ApiResponseDto<>(HttpStatus.NOT_FOUND, 404, null, "Not found in Base find by ID", LocalDateTime.now());
+                return response.toClient();
             }
             return response.toClient();
         } catch (Exception exception){
@@ -71,18 +74,105 @@ public abstract class BaseController<T, ID> {
     }
 
 
-    public List<T> updateAll(List<T> entities ){
-        return baseService.updateAll(entities);
+    public ResponseEntity<ApiResponseDto<List<T>>> updateAll(List<T> entities ){
+        List<T> foundEntities = new ArrayList<>();
+        List<T> notFoundEntities = new ArrayList<>();
+        try {
+            for(T entity : entities){
+                if(entity instanceof Identifiable){
+                    ID id = (ID) ((Identifiable) entity).getId();
+                    Optional<T> existingEntityOptional = baseService.findById(id);
+                    if(existingEntityOptional.isPresent()){
+                        T existingEntity = existingEntityOptional.get();
+                        for (Field field : entity.getClass().getDeclaredFields()) {
+                            field.setAccessible(true);
+                                Object value = field.get(entity);
+                                if (value != null) {
+                                    field.set(existingEntity, value);
+                                }
+                        }
+                        foundEntities.add(existingEntity);
+                    } else {
+                        notFoundEntities.add(entity);
+                    }
+                }
+            }
+            ApiResponseDto<List<T>> response;
+            if(notFoundEntities.isEmpty()){
+                List<T> items = baseService.updateAll(foundEntities);
+                response = new ApiResponseDto<>(HttpStatus.OK, 200, items, "Successfully Update All ",
+                        LocalDateTime.now());
+            } else {
+                response = new ApiResponseDto<>(HttpStatus.NOT_FOUND, 404, null, "Some Entity not found in Base Update All", LocalDateTime.now());
+            }
+            return response.toClient();
+        }  catch (Exception exception){
+            ApiResponseDto<List<T>> exceptionResponse = new ApiResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    500, null, "Catch in Base Controller Update All: " + exception.getMessage(), LocalDateTime.now());
+            return exceptionResponse.toClient();
+        }
     }
 
 
-    public T updateOne(T entity){
-        return baseService.updateOne(entity);
+    public ResponseEntity<ApiResponseDto<T>> updateOne(T entity, ID id){
+        try {
+            Optional<T> item = baseService.findById(id);
+            ApiResponseDto<T> response;
+            if(item.isPresent()){
+              T updatedItem =  baseService.updateOne(entity);
+                response = new ApiResponseDto<>(HttpStatus.OK, 200, updatedItem, "Successfully Update One ",
+                        LocalDateTime.now());
+            } else {
+                response = new ApiResponseDto<>(HttpStatus.NOT_FOUND, 404, null, "Not found this entity in Base Update One", LocalDateTime.now());
+            }
+            return response.toClient();
+
+        } catch (Exception exception){
+            ApiResponseDto<T> exceptionResponse = new ApiResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    500, null, "Catch in Base Controller Update One: " + exception.getMessage(), LocalDateTime.now());
+            return exceptionResponse.toClient();
+        }
     }
 
 
-    public List<T> softDeleteAll(List<T> entities){
-        return baseService.softDeleteAll(entities);
+
+    public ResponseEntity<ApiResponseDto<List<T>>> softDeleteAll(List<ID> idList){
+        List<T> updatedEntities = new ArrayList<>();
+        List<ID> notFoundIdList = new ArrayList<>();
+        try {
+            for(ID id : idList){
+                Optional<T> item = baseService.findById(id);
+                if(item.isPresent()){
+                    T existingEntity = item.get();
+                    Method setDeleted = existingEntity.getClass().getMethod("setDeleted", Boolean.class);
+                    setDeleted.invoke(existingEntity, true);
+
+                    Method setDeletedAt = existingEntity.getClass().getMethod("setDeletedAt", LocalDateTime.class);
+                    setDeletedAt.invoke(existingEntity, LocalDateTime.now());
+
+                    Method setUpdatedAt = existingEntity.getClass().getMethod("setUpdatedAt", LocalDateTime.class);
+                    setUpdatedAt.invoke(existingEntity, LocalDateTime.now());
+
+                    updatedEntities.add(existingEntity);
+                } else {
+                    notFoundIdList.add(id);
+                }
+            }
+
+            ApiResponseDto<List<T>> response;
+            if(notFoundIdList.isEmpty()){
+                List<T> items = baseService.softDeleteAll(updatedEntities);
+                response = new ApiResponseDto<>(HttpStatus.OK, 200, items, "Successfully Soft delete All ",
+                        LocalDateTime.now());
+            } else {
+                response = new ApiResponseDto<>(HttpStatus.NOT_FOUND, 404, null, "Some ID not found in Base Soft delete All", LocalDateTime.now());
+            }
+            return response.toClient();
+        }  catch (Exception exception){
+            ApiResponseDto<List<T>> exceptionResponse = new ApiResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR,
+                    500, null, "Catch in Base Controller Soft delete All: " + exception.getMessage(), LocalDateTime.now());
+            return exceptionResponse.toClient();
+        }
     }
 
 

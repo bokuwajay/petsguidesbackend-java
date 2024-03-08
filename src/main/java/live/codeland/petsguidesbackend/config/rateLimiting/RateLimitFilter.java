@@ -1,16 +1,20 @@
 package live.codeland.petsguidesbackend.config.rateLimiting;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
+import live.codeland.petsguidesbackend.dto.ApiResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 
 @Component
@@ -38,8 +42,15 @@ public class RateLimitFilter extends OncePerRequestFilter {
             // Block the IP address using iptables
 //            blockIP(ipAddress);
 
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; charset=utf-8");
             response.setStatus(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
-            response.getWriter().write("Too many requests. IP blocked.");
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonRspBody = objectMapper.writeValueAsString(new ApiResponseDto(HttpStatus.resolve(416), 416, null, "Too many requests. IP blocked.", null));
+            PrintWriter printWriter = response.getWriter();
+            printWriter.append(jsonRspBody);
+            printWriter.close();
+//            response.getWriter().write("Too many requests. IP blocked.");
         }
     }
 
