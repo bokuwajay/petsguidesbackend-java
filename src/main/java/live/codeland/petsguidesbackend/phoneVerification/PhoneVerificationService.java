@@ -50,7 +50,7 @@ public class PhoneVerificationService {
                     .setCode(userInputCode).create();
             if (verificationCheck.getStatus().equals("approved")) {
                 user.get().setPhoneVerified(true);
-                User updatedUser = userService.updateOne(user.get());
+                User updatedUser = userService.updateOne(user.get(), user.get().getId());
                 return jwtService.generateToken(updatedUser);
             }
         }

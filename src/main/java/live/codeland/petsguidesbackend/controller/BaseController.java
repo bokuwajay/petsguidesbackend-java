@@ -1,5 +1,6 @@
 package live.codeland.petsguidesbackend.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import live.codeland.petsguidesbackend.dto.ApiResponseDto;
 import live.codeland.petsguidesbackend.dto.PaginationDto;
 import live.codeland.petsguidesbackend.model.Identifiable;
@@ -74,53 +75,15 @@ public abstract class BaseController<T, ID> {
     }
 
 
-    public ResponseEntity<ApiResponseDto<List<T>>> updateAll(List<T> entities ){
-        List<T> foundEntities = new ArrayList<>();
-        List<T> notFoundEntities = new ArrayList<>();
-        try {
-            for(T entity : entities){
-                if(entity instanceof Identifiable){
-                    ID id = (ID) ((Identifiable) entity).getId();
-                    Optional<T> existingEntityOptional = baseService.findById(id);
-                    if(existingEntityOptional.isPresent()){
-                        T existingEntity = existingEntityOptional.get();
-                        for (Field field : entity.getClass().getDeclaredFields()) {
-                            field.setAccessible(true);
-                                Object value = field.get(entity);
-                                if (value != null) {
-                                    field.set(existingEntity, value);
-                                }
-                        }
-                        foundEntities.add(existingEntity);
-                    } else {
-                        notFoundEntities.add(entity);
-                    }
-                }
-            }
-            ApiResponseDto<List<T>> response;
-            if(notFoundEntities.isEmpty()){
-                List<T> items = baseService.updateAll(foundEntities);
-                response = new ApiResponseDto<>(HttpStatus.OK, 200, items, "Successfully Update All ",
-                        LocalDateTime.now());
-            } else {
-                response = new ApiResponseDto<>(HttpStatus.NOT_FOUND, 404, null, "Some Entity not found in Base Update All", LocalDateTime.now());
-            }
-            return response.toClient();
-        }  catch (Exception exception){
-            ApiResponseDto<List<T>> exceptionResponse = new ApiResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR,
-                    500, null, "Catch in Base Controller Update All: " + exception.getMessage(), LocalDateTime.now());
-            return exceptionResponse.toClient();
-        }
-    }
-
 
     public ResponseEntity<ApiResponseDto<T>> updateOne(T entity, ID id){
         try {
             Optional<T> item = baseService.findById(id);
             ApiResponseDto<T> response;
             if(item.isPresent()){
-              T updatedItem =  baseService.updateOne(entity);
-                response = new ApiResponseDto<>(HttpStatus.OK, 200, updatedItem, "Successfully Update One ",
+
+              T updatedItem =  baseService.updateOne(entity,id);
+                response = new ApiResponseDto<>(HttpStatus.OK, 200, updatedItem, "Successfully Update One",
                         LocalDateTime.now());
             } else {
                 response = new ApiResponseDto<>(HttpStatus.NOT_FOUND, 404, null, "Not found this entity in Base Update One", LocalDateTime.now());

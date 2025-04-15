@@ -80,7 +80,7 @@ public class User implements UserDetails, Identifiable {
 	private LocalDateTime updatedAt;
 
 	@Field
-	private Boolean deleted = false;
+	private Boolean isDeleted = false;
 
 	@Field
 	private LocalDateTime deletedAt;
@@ -102,7 +102,7 @@ public class User implements UserDetails, Identifiable {
 		this.role = Role.USER;
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
-		this.deleted = false;
+		this.isDeleted = false;
 		this.deletedAt = null;
 	}
 
@@ -166,7 +166,7 @@ public class User implements UserDetails, Identifiable {
 	}
 
 	public Boolean getDeleted() {
-		return deleted;
+		return isDeleted;
 	}
 
 	public LocalDateTime getDeletedAt() {
@@ -226,8 +226,8 @@ public class User implements UserDetails, Identifiable {
 		this.updatedAt = updatedAt;
 	}
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
+	public void setDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 
 	public void setDeletedAt(LocalDateTime deletedAt) {

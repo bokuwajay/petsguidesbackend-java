@@ -43,15 +43,6 @@ public class UserController extends BaseController<User, String>{
 
     // save 1  (no need, This is registration)
 
-
-    // update all
-    @PatchMapping("/profiles-list")
-     public ResponseEntity<ApiResponseDto<List<User>>> updateUserList(@RequestBody List<User> users) {
-
-        return super.updateAll(users);
-
-    }
-
     // update 1
     @PatchMapping("/single-profile/{id}")
     public ResponseEntity<ApiResponseDto<User>> updateUser(@RequestBody User user, @PathVariable("id") String id){

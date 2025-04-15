@@ -1,12 +1,16 @@
 package live.codeland.petsguidesbackend.service;
 
 
+import jakarta.persistence.EntityNotFoundException;
 import live.codeland.petsguidesbackend.dto.PaginationDto;
+import live.codeland.petsguidesbackend.model.Identifiable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,14 +50,31 @@ public abstract class BaseServiceImpl<T, ID> implements BaseService<T,ID> {
 
 
     @Override
-    public List<T> updateAll(List<T> entities ){
-        return repository.saveAll(entities);
+    public T updateOne(T entity, ID id) {
+        Optional<T> optionalExisting = repository.findById(id);
+
+        if (optionalExisting.isEmpty()) {
+            throw new EntityNotFoundException("Entity not found for ID: " + id);
+        }
+
+        T existingEntity = optionalExisting.get();
+
+        // Merge non-null values using reflection
+        for (Field field : entity.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            try {
+                Object newValue = field.get(entity);
+                if (newValue != null) {
+                    field.set(existingEntity, newValue);
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Failed to update field: " + field.getName(), e);
+            }
+        }
+
+        return repository.save(existingEntity);
     }
 
-    @Override
-    public T updateOne(T entity){
-        return repository.save(entity);
-    }
 
     @Override
     public List<T> softDeleteAll(List<T> entities){

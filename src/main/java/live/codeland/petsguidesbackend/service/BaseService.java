@@ -14,9 +14,7 @@ public interface BaseService<T, ID> {
 
     T save(T entity);
 
-    List<T> updateAll(List<T> entities);
-
-    T updateOne(T entity);
+    T updateOne(T entity, ID id);
 
     List<T> softDeleteAll(List<T> entities);
 
