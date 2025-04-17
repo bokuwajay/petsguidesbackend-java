@@ -56,9 +56,5 @@ public class ApplicationConfig {
         return new RateLimiter();
     }
 
-    @Bean
-    public EmailHelper emailHelper() {
-        return new EmailHelper();
-    }
 
 }
